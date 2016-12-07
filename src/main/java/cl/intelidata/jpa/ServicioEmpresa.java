@@ -23,7 +23,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package cl.intelidata.jpa;
 
 import java.io.Serializable;
@@ -33,6 +32,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -40,75 +41,75 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author Juan
+ * @author Dev-DFeliu
  */
 @Entity
-@Table(name = "usuarios")
+@Table(name = "servicio_empresa")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Usuario.findAll", query = "SELECT u FROM Usuario u"),
-    @NamedQuery(name = "Usuario.findByIdusuario", query = "SELECT u FROM Usuario u WHERE u.idusuario = :idusuario"),
-    @NamedQuery(name = "Usuario.findByUsuario", query = "SELECT u FROM Usuario u WHERE u.usuario = :usuario"),
-    @NamedQuery(name = "Usuario.findByContrasena", query = "SELECT u FROM Usuario u WHERE u.contrasena = :contrasena")})
-public class Usuario implements Serializable {
+    @NamedQuery(name = "ServicioEmpresa.findAll", query = "SELECT s FROM ServicioEmpresa s"),
+    @NamedQuery(name = "ServicioEmpresa.findById", query = "SELECT s FROM ServicioEmpresa s WHERE s.id = :id"),
+    @NamedQuery(name = "ServicioEmpresa.findByNombreServicio", query = "SELECT s FROM ServicioEmpresa s WHERE s.nombreServicio = :nombreServicio")})
+public class ServicioEmpresa implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "idusuario")
-    private Integer idusuario;
-    @Column(name = "usuario")
-    private String usuario;
-    @Column(name = "contrasena")
-    private String contrasena;
+    @Column(name = "id")
+    private Integer id;
+    @Column(name = "nombre_servicio")
+    private String nombreServicio;
+    @JoinColumn(name = "id_empresa", referencedColumnName = "id")
+    @ManyToOne
+    private Empresa idEmpresa;
 
-    public Usuario() {
+    public ServicioEmpresa() {
     }
 
-    public Usuario(Integer idusuario) {
-        this.idusuario = idusuario;
+    public ServicioEmpresa(Integer id) {
+        this.id = id;
     }
 
-    public Integer getIdusuario() {
-        return idusuario;
+    public Integer getId() {
+        return id;
     }
 
-    public void setIdusuario(Integer idusuario) {
-        this.idusuario = idusuario;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public String getUsuario() {
-        return usuario;
+    public String getNombreServicio() {
+        return nombreServicio;
     }
 
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
+    public void setNombreServicio(String nombreServicio) {
+        this.nombreServicio = nombreServicio;
     }
 
-    public String getContrasena() {
-        return contrasena;
+    public Empresa getIdEmpresa() {
+        return idEmpresa;
     }
 
-    public void setContrasena(String contrasena) {
-        this.contrasena = contrasena;
+    public void setIdEmpresa(Empresa idEmpresa) {
+        this.idEmpresa = idEmpresa;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (idusuario != null ? idusuario.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Usuario)) {
+        if (!(object instanceof ServicioEmpresa)) {
             return false;
         }
-        Usuario other = (Usuario) object;
-        if ((this.idusuario == null && other.idusuario != null) || (this.idusuario != null && !this.idusuario.equals(other.idusuario))) {
+        ServicioEmpresa other = (ServicioEmpresa) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -116,7 +117,7 @@ public class Usuario implements Serializable {
 
     @Override
     public String toString() {
-        return "cl.intelidata.jpa.Usuario[ idusuario=" + idusuario + " ]";
+        return "cl.intelidata.jpa.ServicioEmpresa[ id=" + id + " ]";
     }
     
 }

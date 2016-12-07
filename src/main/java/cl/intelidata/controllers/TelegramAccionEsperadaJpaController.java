@@ -23,27 +23,27 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package cl.intelidata.controllers;
 
 import cl.intelidata.controllers.exceptions.NonexistentEntityException;
-import cl.intelidata.jpa.Usuario;
+import cl.intelidata.jpa.TelegramAccionEsperada;
 import java.io.Serializable;
-import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import cl.intelidata.jpa.Usuarios;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 
 /**
  *
- * @author Juan
+ * @author Dev-DFeliu
  */
-public class UsuarioJpaController implements Serializable {
+public class TelegramAccionEsperadaJpaController implements Serializable {
 
-    public UsuarioJpaController(EntityManagerFactory emf) {
+    public TelegramAccionEsperadaJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
     private EntityManagerFactory emf = null;
@@ -52,12 +52,21 @@ public class UsuarioJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(Usuario usuario) {
+    public void create(TelegramAccionEsperada telegramAccionEsperada) {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            em.persist(usuario);
+            Usuarios idUsuario = telegramAccionEsperada.getIdUsuario();
+            if (idUsuario != null) {
+                idUsuario = em.getReference(idUsuario.getClass(), idUsuario.getId());
+                telegramAccionEsperada.setIdUsuario(idUsuario);
+            }
+            em.persist(telegramAccionEsperada);
+            if (idUsuario != null) {
+                idUsuario.getTelegramAccionEsperadaList().add(telegramAccionEsperada);
+                idUsuario = em.merge(idUsuario);
+            }
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -66,19 +75,34 @@ public class UsuarioJpaController implements Serializable {
         }
     }
 
-    public void edit(Usuario usuario) throws NonexistentEntityException, Exception {
+    public void edit(TelegramAccionEsperada telegramAccionEsperada) throws NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            usuario = em.merge(usuario);
+            TelegramAccionEsperada persistentTelegramAccionEsperada = em.find(TelegramAccionEsperada.class, telegramAccionEsperada.getId());
+            Usuarios idUsuarioOld = persistentTelegramAccionEsperada.getIdUsuario();
+            Usuarios idUsuarioNew = telegramAccionEsperada.getIdUsuario();
+            if (idUsuarioNew != null) {
+                idUsuarioNew = em.getReference(idUsuarioNew.getClass(), idUsuarioNew.getId());
+                telegramAccionEsperada.setIdUsuario(idUsuarioNew);
+            }
+            telegramAccionEsperada = em.merge(telegramAccionEsperada);
+            if (idUsuarioOld != null && !idUsuarioOld.equals(idUsuarioNew)) {
+                idUsuarioOld.getTelegramAccionEsperadaList().remove(telegramAccionEsperada);
+                idUsuarioOld = em.merge(idUsuarioOld);
+            }
+            if (idUsuarioNew != null && !idUsuarioNew.equals(idUsuarioOld)) {
+                idUsuarioNew.getTelegramAccionEsperadaList().add(telegramAccionEsperada);
+                idUsuarioNew = em.merge(idUsuarioNew);
+            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                Integer id = usuario.getIdusuario();
-                if (findUsuario(id) == null) {
-                    throw new NonexistentEntityException("The usuario with id " + id + " no longer exists.");
+                Integer id = telegramAccionEsperada.getId();
+                if (findTelegramAccionEsperada(id) == null) {
+                    throw new NonexistentEntityException("The telegramAccionEsperada with id " + id + " no longer exists.");
                 }
             }
             throw ex;
@@ -94,14 +118,19 @@ public class UsuarioJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Usuario usuario;
+            TelegramAccionEsperada telegramAccionEsperada;
             try {
-                usuario = em.getReference(Usuario.class, id);
-                usuario.getIdusuario();
+                telegramAccionEsperada = em.getReference(TelegramAccionEsperada.class, id);
+                telegramAccionEsperada.getId();
             } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The usuario with id " + id + " no longer exists.", enfe);
+                throw new NonexistentEntityException("The telegramAccionEsperada with id " + id + " no longer exists.", enfe);
             }
-            em.remove(usuario);
+            Usuarios idUsuario = telegramAccionEsperada.getIdUsuario();
+            if (idUsuario != null) {
+                idUsuario.getTelegramAccionEsperadaList().remove(telegramAccionEsperada);
+                idUsuario = em.merge(idUsuario);
+            }
+            em.remove(telegramAccionEsperada);
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -110,19 +139,19 @@ public class UsuarioJpaController implements Serializable {
         }
     }
 
-    public List<Usuario> findUsuarioEntities() {
-        return findUsuarioEntities(true, -1, -1);
+    public List<TelegramAccionEsperada> findTelegramAccionEsperadaEntities() {
+        return findTelegramAccionEsperadaEntities(true, -1, -1);
     }
 
-    public List<Usuario> findUsuarioEntities(int maxResults, int firstResult) {
-        return findUsuarioEntities(false, maxResults, firstResult);
+    public List<TelegramAccionEsperada> findTelegramAccionEsperadaEntities(int maxResults, int firstResult) {
+        return findTelegramAccionEsperadaEntities(false, maxResults, firstResult);
     }
 
-    private List<Usuario> findUsuarioEntities(boolean all, int maxResults, int firstResult) {
+    private List<TelegramAccionEsperada> findTelegramAccionEsperadaEntities(boolean all, int maxResults, int firstResult) {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            cq.select(cq.from(Usuario.class));
+            cq.select(cq.from(TelegramAccionEsperada.class));
             Query q = em.createQuery(cq);
             if (!all) {
                 q.setMaxResults(maxResults);
@@ -134,20 +163,20 @@ public class UsuarioJpaController implements Serializable {
         }
     }
 
-    public Usuario findUsuario(Integer id) {
+    public TelegramAccionEsperada findTelegramAccionEsperada(Integer id) {
         EntityManager em = getEntityManager();
         try {
-            return em.find(Usuario.class, id);
+            return em.find(TelegramAccionEsperada.class, id);
         } finally {
             em.close();
         }
     }
 
-    public int getUsuarioCount() {
+    public int getTelegramAccionEsperadaCount() {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            Root<Usuario> rt = cq.from(Usuario.class);
+            Root<TelegramAccionEsperada> rt = cq.from(TelegramAccionEsperada.class);
             cq.select(em.getCriteriaBuilder().count(rt));
             Query q = em.createQuery(cq);
             return ((Long) q.getSingleResult()).intValue();

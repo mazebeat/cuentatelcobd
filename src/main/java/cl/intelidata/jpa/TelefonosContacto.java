@@ -23,7 +23,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package cl.intelidata.jpa;
 
 import java.io.Serializable;
@@ -40,75 +39,86 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author Juan
+ * @author Dev-DFeliu
  */
 @Entity
-@Table(name = "usuarios")
+@Table(name = "telefonos_contacto")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Usuario.findAll", query = "SELECT u FROM Usuario u"),
-    @NamedQuery(name = "Usuario.findByIdusuario", query = "SELECT u FROM Usuario u WHERE u.idusuario = :idusuario"),
-    @NamedQuery(name = "Usuario.findByUsuario", query = "SELECT u FROM Usuario u WHERE u.usuario = :usuario"),
-    @NamedQuery(name = "Usuario.findByContrasena", query = "SELECT u FROM Usuario u WHERE u.contrasena = :contrasena")})
-public class Usuario implements Serializable {
+    @NamedQuery(name = "TelefonosContacto.findAll", query = "SELECT t FROM TelefonosContacto t"),
+    @NamedQuery(name = "TelefonosContacto.findById", query = "SELECT t FROM TelefonosContacto t WHERE t.id = :id"),
+    @NamedQuery(name = "TelefonosContacto.findByTexto", query = "SELECT t FROM TelefonosContacto t WHERE t.texto = :texto"),
+    @NamedQuery(name = "TelefonosContacto.findByNumero", query = "SELECT t FROM TelefonosContacto t WHERE t.numero = :numero"),
+    @NamedQuery(name = "TelefonosContacto.findByTipo", query = "SELECT t FROM TelefonosContacto t WHERE t.tipo = :tipo")})
+public class TelefonosContacto implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "idusuario")
-    private Integer idusuario;
-    @Column(name = "usuario")
-    private String usuario;
-    @Column(name = "contrasena")
-    private String contrasena;
+    @Column(name = "id")
+    private Integer id;
+    @Column(name = "texto")
+    private String texto;
+    @Column(name = "numero")
+    private String numero;
+    @Column(name = "tipo")
+    private Integer tipo;
 
-    public Usuario() {
+    public TelefonosContacto() {
     }
 
-    public Usuario(Integer idusuario) {
-        this.idusuario = idusuario;
+    public TelefonosContacto(Integer id) {
+        this.id = id;
     }
 
-    public Integer getIdusuario() {
-        return idusuario;
+    public Integer getId() {
+        return id;
     }
 
-    public void setIdusuario(Integer idusuario) {
-        this.idusuario = idusuario;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public String getUsuario() {
-        return usuario;
+    public String getTexto() {
+        return texto;
     }
 
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
+    public void setTexto(String texto) {
+        this.texto = texto;
     }
 
-    public String getContrasena() {
-        return contrasena;
+    public String getNumero() {
+        return numero;
     }
 
-    public void setContrasena(String contrasena) {
-        this.contrasena = contrasena;
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+
+    public Integer getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(Integer tipo) {
+        this.tipo = tipo;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (idusuario != null ? idusuario.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Usuario)) {
+        if (!(object instanceof TelefonosContacto)) {
             return false;
         }
-        Usuario other = (Usuario) object;
-        if ((this.idusuario == null && other.idusuario != null) || (this.idusuario != null && !this.idusuario.equals(other.idusuario))) {
+        TelefonosContacto other = (TelefonosContacto) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -116,7 +126,7 @@ public class Usuario implements Serializable {
 
     @Override
     public String toString() {
-        return "cl.intelidata.jpa.Usuario[ idusuario=" + idusuario + " ]";
+        return "cl.intelidata.jpa.TelefonosContacto[ id=" + id + " ]";
     }
     
 }

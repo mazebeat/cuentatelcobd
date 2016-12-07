@@ -23,16 +23,11 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package cl.intelidata.jpa;
 
 import java.io.Serializable;
-import javax.persistence.Basic;
-import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -40,75 +35,55 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author Juan
+ * @author Dev-DFeliu
  */
 @Entity
-@Table(name = "usuarios")
+@Table(name = "conv_users")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Usuario.findAll", query = "SELECT u FROM Usuario u"),
-    @NamedQuery(name = "Usuario.findByIdusuario", query = "SELECT u FROM Usuario u WHERE u.idusuario = :idusuario"),
-    @NamedQuery(name = "Usuario.findByUsuario", query = "SELECT u FROM Usuario u WHERE u.usuario = :usuario"),
-    @NamedQuery(name = "Usuario.findByContrasena", query = "SELECT u FROM Usuario u WHERE u.contrasena = :contrasena")})
-public class Usuario implements Serializable {
+    @NamedQuery(name = "ConvUsers.findAll", query = "SELECT c FROM ConvUsers c"),
+    @NamedQuery(name = "ConvUsers.findByConvId", query = "SELECT c FROM ConvUsers c WHERE c.convUsersPK.convId = :convId"),
+    @NamedQuery(name = "ConvUsers.findByUserId", query = "SELECT c FROM ConvUsers c WHERE c.convUsersPK.userId = :userId")})
+public class ConvUsers implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "idusuario")
-    private Integer idusuario;
-    @Column(name = "usuario")
-    private String usuario;
-    @Column(name = "contrasena")
-    private String contrasena;
+    @EmbeddedId
+    protected ConvUsersPK convUsersPK;
 
-    public Usuario() {
+    public ConvUsers() {
     }
 
-    public Usuario(Integer idusuario) {
-        this.idusuario = idusuario;
+    public ConvUsers(ConvUsersPK convUsersPK) {
+        this.convUsersPK = convUsersPK;
     }
 
-    public Integer getIdusuario() {
-        return idusuario;
+    public ConvUsers(int convId, int userId) {
+        this.convUsersPK = new ConvUsersPK(convId, userId);
     }
 
-    public void setIdusuario(Integer idusuario) {
-        this.idusuario = idusuario;
+    public ConvUsersPK getConvUsersPK() {
+        return convUsersPK;
     }
 
-    public String getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
-    }
-
-    public String getContrasena() {
-        return contrasena;
-    }
-
-    public void setContrasena(String contrasena) {
-        this.contrasena = contrasena;
+    public void setConvUsersPK(ConvUsersPK convUsersPK) {
+        this.convUsersPK = convUsersPK;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (idusuario != null ? idusuario.hashCode() : 0);
+        hash += (convUsersPK != null ? convUsersPK.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Usuario)) {
+        if (!(object instanceof ConvUsers)) {
             return false;
         }
-        Usuario other = (Usuario) object;
-        if ((this.idusuario == null && other.idusuario != null) || (this.idusuario != null && !this.idusuario.equals(other.idusuario))) {
+        ConvUsers other = (ConvUsers) object;
+        if ((this.convUsersPK == null && other.convUsersPK != null) || (this.convUsersPK != null && !this.convUsersPK.equals(other.convUsersPK))) {
             return false;
         }
         return true;
@@ -116,7 +91,7 @@ public class Usuario implements Serializable {
 
     @Override
     public String toString() {
-        return "cl.intelidata.jpa.Usuario[ idusuario=" + idusuario + " ]";
+        return "cl.intelidata.jpa.ConvUsers[ convUsersPK=" + convUsersPK + " ]";
     }
     
 }

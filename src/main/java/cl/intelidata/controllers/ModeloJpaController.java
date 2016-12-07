@@ -23,27 +23,27 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package cl.intelidata.controllers;
 
 import cl.intelidata.controllers.exceptions.NonexistentEntityException;
-import cl.intelidata.jpa.Usuario;
 import java.io.Serializable;
-import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import cl.intelidata.jpa.MarcaCelular;
+import cl.intelidata.jpa.Modelo;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 
 /**
  *
- * @author Juan
+ * @author Dev-DFeliu
  */
-public class UsuarioJpaController implements Serializable {
+public class ModeloJpaController implements Serializable {
 
-    public UsuarioJpaController(EntityManagerFactory emf) {
+    public ModeloJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
     private EntityManagerFactory emf = null;
@@ -52,12 +52,21 @@ public class UsuarioJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(Usuario usuario) {
+    public void create(Modelo modelo) {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            em.persist(usuario);
+            MarcaCelular idMarca = modelo.getIdMarca();
+            if (idMarca != null) {
+                idMarca = em.getReference(idMarca.getClass(), idMarca.getId());
+                modelo.setIdMarca(idMarca);
+            }
+            em.persist(modelo);
+            if (idMarca != null) {
+                idMarca.getModeloList().add(modelo);
+                idMarca = em.merge(idMarca);
+            }
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -66,19 +75,34 @@ public class UsuarioJpaController implements Serializable {
         }
     }
 
-    public void edit(Usuario usuario) throws NonexistentEntityException, Exception {
+    public void edit(Modelo modelo) throws NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            usuario = em.merge(usuario);
+            Modelo persistentModelo = em.find(Modelo.class, modelo.getId());
+            MarcaCelular idMarcaOld = persistentModelo.getIdMarca();
+            MarcaCelular idMarcaNew = modelo.getIdMarca();
+            if (idMarcaNew != null) {
+                idMarcaNew = em.getReference(idMarcaNew.getClass(), idMarcaNew.getId());
+                modelo.setIdMarca(idMarcaNew);
+            }
+            modelo = em.merge(modelo);
+            if (idMarcaOld != null && !idMarcaOld.equals(idMarcaNew)) {
+                idMarcaOld.getModeloList().remove(modelo);
+                idMarcaOld = em.merge(idMarcaOld);
+            }
+            if (idMarcaNew != null && !idMarcaNew.equals(idMarcaOld)) {
+                idMarcaNew.getModeloList().add(modelo);
+                idMarcaNew = em.merge(idMarcaNew);
+            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                Integer id = usuario.getIdusuario();
-                if (findUsuario(id) == null) {
-                    throw new NonexistentEntityException("The usuario with id " + id + " no longer exists.");
+                Integer id = modelo.getId();
+                if (findModelo(id) == null) {
+                    throw new NonexistentEntityException("The modelo with id " + id + " no longer exists.");
                 }
             }
             throw ex;
@@ -94,14 +118,19 @@ public class UsuarioJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Usuario usuario;
+            Modelo modelo;
             try {
-                usuario = em.getReference(Usuario.class, id);
-                usuario.getIdusuario();
+                modelo = em.getReference(Modelo.class, id);
+                modelo.getId();
             } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The usuario with id " + id + " no longer exists.", enfe);
+                throw new NonexistentEntityException("The modelo with id " + id + " no longer exists.", enfe);
             }
-            em.remove(usuario);
+            MarcaCelular idMarca = modelo.getIdMarca();
+            if (idMarca != null) {
+                idMarca.getModeloList().remove(modelo);
+                idMarca = em.merge(idMarca);
+            }
+            em.remove(modelo);
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -110,19 +139,19 @@ public class UsuarioJpaController implements Serializable {
         }
     }
 
-    public List<Usuario> findUsuarioEntities() {
-        return findUsuarioEntities(true, -1, -1);
+    public List<Modelo> findModeloEntities() {
+        return findModeloEntities(true, -1, -1);
     }
 
-    public List<Usuario> findUsuarioEntities(int maxResults, int firstResult) {
-        return findUsuarioEntities(false, maxResults, firstResult);
+    public List<Modelo> findModeloEntities(int maxResults, int firstResult) {
+        return findModeloEntities(false, maxResults, firstResult);
     }
 
-    private List<Usuario> findUsuarioEntities(boolean all, int maxResults, int firstResult) {
+    private List<Modelo> findModeloEntities(boolean all, int maxResults, int firstResult) {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            cq.select(cq.from(Usuario.class));
+            cq.select(cq.from(Modelo.class));
             Query q = em.createQuery(cq);
             if (!all) {
                 q.setMaxResults(maxResults);
@@ -134,20 +163,20 @@ public class UsuarioJpaController implements Serializable {
         }
     }
 
-    public Usuario findUsuario(Integer id) {
+    public Modelo findModelo(Integer id) {
         EntityManager em = getEntityManager();
         try {
-            return em.find(Usuario.class, id);
+            return em.find(Modelo.class, id);
         } finally {
             em.close();
         }
     }
 
-    public int getUsuarioCount() {
+    public int getModeloCount() {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            Root<Usuario> rt = cq.from(Usuario.class);
+            Root<Modelo> rt = cq.from(Modelo.class);
             cq.select(em.getCriteriaBuilder().count(rt));
             Query q = em.createQuery(cq);
             return ((Long) q.getSingleResult()).intValue();

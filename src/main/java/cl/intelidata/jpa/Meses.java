@@ -23,10 +23,10 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package cl.intelidata.jpa;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,80 +35,93 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author Juan
+ * @author Dev-DFeliu
  */
 @Entity
-@Table(name = "usuarios")
+@Table(name = "meses")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Usuario.findAll", query = "SELECT u FROM Usuario u"),
-    @NamedQuery(name = "Usuario.findByIdusuario", query = "SELECT u FROM Usuario u WHERE u.idusuario = :idusuario"),
-    @NamedQuery(name = "Usuario.findByUsuario", query = "SELECT u FROM Usuario u WHERE u.usuario = :usuario"),
-    @NamedQuery(name = "Usuario.findByContrasena", query = "SELECT u FROM Usuario u WHERE u.contrasena = :contrasena")})
-public class Usuario implements Serializable {
+    @NamedQuery(name = "Meses.findAll", query = "SELECT m FROM Meses m"),
+    @NamedQuery(name = "Meses.findById", query = "SELECT m FROM Meses m WHERE m.id = :id"),
+    @NamedQuery(name = "Meses.findByMes", query = "SELECT m FROM Meses m WHERE m.mes = :mes"),
+    @NamedQuery(name = "Meses.findByEstado", query = "SELECT m FROM Meses m WHERE m.estado = :estado")})
+public class Meses implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "idusuario")
-    private Integer idusuario;
-    @Column(name = "usuario")
-    private String usuario;
-    @Column(name = "contrasena")
-    private String contrasena;
+    @Column(name = "id")
+    private Integer id;
+    @Column(name = "mes")
+    private String mes;
+    @Column(name = "estado")
+    private Integer estado;
+    @OneToMany(mappedBy = "idMes")
+    private List<ResumenAnualCliente> resumenAnualClienteList;
 
-    public Usuario() {
+    public Meses() {
     }
 
-    public Usuario(Integer idusuario) {
-        this.idusuario = idusuario;
+    public Meses(Integer id) {
+        this.id = id;
     }
 
-    public Integer getIdusuario() {
-        return idusuario;
+    public Integer getId() {
+        return id;
     }
 
-    public void setIdusuario(Integer idusuario) {
-        this.idusuario = idusuario;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public String getUsuario() {
-        return usuario;
+    public String getMes() {
+        return mes;
     }
 
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
+    public void setMes(String mes) {
+        this.mes = mes;
     }
 
-    public String getContrasena() {
-        return contrasena;
+    public Integer getEstado() {
+        return estado;
     }
 
-    public void setContrasena(String contrasena) {
-        this.contrasena = contrasena;
+    public void setEstado(Integer estado) {
+        this.estado = estado;
+    }
+
+    @XmlTransient
+    public List<ResumenAnualCliente> getResumenAnualClienteList() {
+        return resumenAnualClienteList;
+    }
+
+    public void setResumenAnualClienteList(List<ResumenAnualCliente> resumenAnualClienteList) {
+        this.resumenAnualClienteList = resumenAnualClienteList;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (idusuario != null ? idusuario.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Usuario)) {
+        if (!(object instanceof Meses)) {
             return false;
         }
-        Usuario other = (Usuario) object;
-        if ((this.idusuario == null && other.idusuario != null) || (this.idusuario != null && !this.idusuario.equals(other.idusuario))) {
+        Meses other = (Meses) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -116,7 +129,7 @@ public class Usuario implements Serializable {
 
     @Override
     public String toString() {
-        return "cl.intelidata.jpa.Usuario[ idusuario=" + idusuario + " ]";
+        return "cl.intelidata.jpa.Meses[ id=" + id + " ]";
     }
     
 }

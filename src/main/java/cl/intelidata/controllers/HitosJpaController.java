@@ -23,27 +23,27 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package cl.intelidata.controllers;
 
 import cl.intelidata.controllers.exceptions.NonexistentEntityException;
-import cl.intelidata.jpa.Usuario;
 import java.io.Serializable;
-import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import cl.intelidata.jpa.Cliente;
+import cl.intelidata.jpa.Hitos;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 
 /**
  *
- * @author Juan
+ * @author Dev-DFeliu
  */
-public class UsuarioJpaController implements Serializable {
+public class HitosJpaController implements Serializable {
 
-    public UsuarioJpaController(EntityManagerFactory emf) {
+    public HitosJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
     private EntityManagerFactory emf = null;
@@ -52,12 +52,21 @@ public class UsuarioJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(Usuario usuario) {
+    public void create(Hitos hitos) {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            em.persist(usuario);
+            Cliente clienteId = hitos.getClienteId();
+            if (clienteId != null) {
+                clienteId = em.getReference(clienteId.getClass(), clienteId.getId());
+                hitos.setClienteId(clienteId);
+            }
+            em.persist(hitos);
+            if (clienteId != null) {
+                clienteId.getHitosList().add(hitos);
+                clienteId = em.merge(clienteId);
+            }
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -66,19 +75,34 @@ public class UsuarioJpaController implements Serializable {
         }
     }
 
-    public void edit(Usuario usuario) throws NonexistentEntityException, Exception {
+    public void edit(Hitos hitos) throws NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            usuario = em.merge(usuario);
+            Hitos persistentHitos = em.find(Hitos.class, hitos.getId());
+            Cliente clienteIdOld = persistentHitos.getClienteId();
+            Cliente clienteIdNew = hitos.getClienteId();
+            if (clienteIdNew != null) {
+                clienteIdNew = em.getReference(clienteIdNew.getClass(), clienteIdNew.getId());
+                hitos.setClienteId(clienteIdNew);
+            }
+            hitos = em.merge(hitos);
+            if (clienteIdOld != null && !clienteIdOld.equals(clienteIdNew)) {
+                clienteIdOld.getHitosList().remove(hitos);
+                clienteIdOld = em.merge(clienteIdOld);
+            }
+            if (clienteIdNew != null && !clienteIdNew.equals(clienteIdOld)) {
+                clienteIdNew.getHitosList().add(hitos);
+                clienteIdNew = em.merge(clienteIdNew);
+            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                Integer id = usuario.getIdusuario();
-                if (findUsuario(id) == null) {
-                    throw new NonexistentEntityException("The usuario with id " + id + " no longer exists.");
+                Integer id = hitos.getId();
+                if (findHitos(id) == null) {
+                    throw new NonexistentEntityException("The hitos with id " + id + " no longer exists.");
                 }
             }
             throw ex;
@@ -94,14 +118,19 @@ public class UsuarioJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Usuario usuario;
+            Hitos hitos;
             try {
-                usuario = em.getReference(Usuario.class, id);
-                usuario.getIdusuario();
+                hitos = em.getReference(Hitos.class, id);
+                hitos.getId();
             } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The usuario with id " + id + " no longer exists.", enfe);
+                throw new NonexistentEntityException("The hitos with id " + id + " no longer exists.", enfe);
             }
-            em.remove(usuario);
+            Cliente clienteId = hitos.getClienteId();
+            if (clienteId != null) {
+                clienteId.getHitosList().remove(hitos);
+                clienteId = em.merge(clienteId);
+            }
+            em.remove(hitos);
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -110,19 +139,19 @@ public class UsuarioJpaController implements Serializable {
         }
     }
 
-    public List<Usuario> findUsuarioEntities() {
-        return findUsuarioEntities(true, -1, -1);
+    public List<Hitos> findHitosEntities() {
+        return findHitosEntities(true, -1, -1);
     }
 
-    public List<Usuario> findUsuarioEntities(int maxResults, int firstResult) {
-        return findUsuarioEntities(false, maxResults, firstResult);
+    public List<Hitos> findHitosEntities(int maxResults, int firstResult) {
+        return findHitosEntities(false, maxResults, firstResult);
     }
 
-    private List<Usuario> findUsuarioEntities(boolean all, int maxResults, int firstResult) {
+    private List<Hitos> findHitosEntities(boolean all, int maxResults, int firstResult) {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            cq.select(cq.from(Usuario.class));
+            cq.select(cq.from(Hitos.class));
             Query q = em.createQuery(cq);
             if (!all) {
                 q.setMaxResults(maxResults);
@@ -134,20 +163,20 @@ public class UsuarioJpaController implements Serializable {
         }
     }
 
-    public Usuario findUsuario(Integer id) {
+    public Hitos findHitos(Integer id) {
         EntityManager em = getEntityManager();
         try {
-            return em.find(Usuario.class, id);
+            return em.find(Hitos.class, id);
         } finally {
             em.close();
         }
     }
 
-    public int getUsuarioCount() {
+    public int getHitosCount() {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            Root<Usuario> rt = cq.from(Usuario.class);
+            Root<Hitos> rt = cq.from(Hitos.class);
             cq.select(em.getCriteriaBuilder().count(rt));
             Query q = em.createQuery(cq);
             return ((Long) q.getSingleResult()).intValue();

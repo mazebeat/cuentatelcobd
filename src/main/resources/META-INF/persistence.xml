@@ -3,6 +3,48 @@
   <persistence-unit name="CtaTelco_PU" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <class>cl.intelidata.jpa.Usuario</class>
+    <class>cl.intelidata.jpa.Preguntas</class>
+    <class>cl.intelidata.jpa.Empresa</class>
+    <class>cl.intelidata.jpa.TelefonosServicios</class>
+    <class>cl.intelidata.jpa.CentroDeAyuda</class>
+    <class>cl.intelidata.jpa.TipoNotificacion</class>
+    <class>cl.intelidata.jpa.TelegramUsuario</class>
+    <class>cl.intelidata.jpa.ClientePreguntas</class>
+    <class>cl.intelidata.jpa.Sucursales</class>
+    <class>cl.intelidata.jpa.FacebookAccionEsperada</class>
+    <class>cl.intelidata.jpa.TitularAdicional</class>
+    <class>cl.intelidata.jpa.Total</class>
+    <class>cl.intelidata.jpa.Usuarios</class>
+    <class>cl.intelidata.jpa.PreguntaRespuesta</class>
+    <class>cl.intelidata.jpa.Servicio</class>
+    <class>cl.intelidata.jpa.Telefono</class>
+    <class>cl.intelidata.jpa.TelefonosContacto</class>
+    <class>cl.intelidata.jpa.ApiKeys</class>
+    <class>cl.intelidata.jpa.Producto</class>
+    <class>cl.intelidata.jpa.Meses</class>
+    <class>cl.intelidata.jpa.ResumenAnualCliente</class>
+    <class>cl.intelidata.jpa.TelegramSugerencia</class>
+    <class>cl.intelidata.jpa.SaldosAnteriores</class>
+    <class>cl.intelidata.jpa.ConvUsers</class>
+    <class>cl.intelidata.jpa.TotalServicios</class>
+    <class>cl.intelidata.jpa.MarcaCelular</class>
+    <class>cl.intelidata.jpa.Modelo</class>
+    <class>cl.intelidata.jpa.TipoServicio</class>
+    <class>cl.intelidata.jpa.Trafico</class>
+    <class>cl.intelidata.jpa.TelegramUsuarioIntegracion</class>
+    <class>cl.intelidata.jpa.FacebookUsuarioIntegracion</class>
+    <class>cl.intelidata.jpa.Hitos</class>
+    <class>cl.intelidata.jpa.Persona</class>
+    <class>cl.intelidata.jpa.FacebookUsuario</class>
+    <class>cl.intelidata.jpa.Cliente</class>
+    <class>cl.intelidata.jpa.Respuestas</class>
+    <class>cl.intelidata.jpa.ApiLogs</class>
+    <class>cl.intelidata.jpa.TelegramReclamo</class>
+    <class>cl.intelidata.jpa.Apikeyuser</class>
+    <class>cl.intelidata.jpa.Ejecutivo</class>
+    <class>cl.intelidata.jpa.ServicioEmpresa</class>
+    <class>cl.intelidata.jpa.TelegramAccionEsperada</class>
+    <class>cl.intelidata.jpa.Notificaciones</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://50.116.60.31:6033/cuentatelco?zeroDateTimeBehavior=convertToNull"/>
       <property name="javax.persistence.jdbc.user" value="intelidata"/>

@@ -23,7 +23,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package cl.intelidata.jpa;
 
 import java.io.Serializable;
@@ -33,6 +32,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -40,75 +41,86 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author Juan
+ * @author Dev-DFeliu
  */
 @Entity
-@Table(name = "usuarios")
+@Table(name = "centro_de_ayuda")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Usuario.findAll", query = "SELECT u FROM Usuario u"),
-    @NamedQuery(name = "Usuario.findByIdusuario", query = "SELECT u FROM Usuario u WHERE u.idusuario = :idusuario"),
-    @NamedQuery(name = "Usuario.findByUsuario", query = "SELECT u FROM Usuario u WHERE u.usuario = :usuario"),
-    @NamedQuery(name = "Usuario.findByContrasena", query = "SELECT u FROM Usuario u WHERE u.contrasena = :contrasena")})
-public class Usuario implements Serializable {
+    @NamedQuery(name = "CentroDeAyuda.findAll", query = "SELECT c FROM CentroDeAyuda c"),
+    @NamedQuery(name = "CentroDeAyuda.findById", query = "SELECT c FROM CentroDeAyuda c WHERE c.id = :id"),
+    @NamedQuery(name = "CentroDeAyuda.findByUrl", query = "SELECT c FROM CentroDeAyuda c WHERE c.url = :url"),
+    @NamedQuery(name = "CentroDeAyuda.findByProducto", query = "SELECT c FROM CentroDeAyuda c WHERE c.producto = :producto")})
+public class CentroDeAyuda implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "idusuario")
-    private Integer idusuario;
-    @Column(name = "usuario")
-    private String usuario;
-    @Column(name = "contrasena")
-    private String contrasena;
+    @Column(name = "id")
+    private Integer id;
+    @Column(name = "url")
+    private String url;
+    @Column(name = "producto")
+    private String producto;
+    @JoinColumn(name = "id_empresa", referencedColumnName = "id")
+    @ManyToOne
+    private Empresa idEmpresa;
 
-    public Usuario() {
+    public CentroDeAyuda() {
     }
 
-    public Usuario(Integer idusuario) {
-        this.idusuario = idusuario;
+    public CentroDeAyuda(Integer id) {
+        this.id = id;
     }
 
-    public Integer getIdusuario() {
-        return idusuario;
+    public Integer getId() {
+        return id;
     }
 
-    public void setIdusuario(Integer idusuario) {
-        this.idusuario = idusuario;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public String getUsuario() {
-        return usuario;
+    public String getUrl() {
+        return url;
     }
 
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
-    public String getContrasena() {
-        return contrasena;
+    public String getProducto() {
+        return producto;
     }
 
-    public void setContrasena(String contrasena) {
-        this.contrasena = contrasena;
+    public void setProducto(String producto) {
+        this.producto = producto;
+    }
+
+    public Empresa getIdEmpresa() {
+        return idEmpresa;
+    }
+
+    public void setIdEmpresa(Empresa idEmpresa) {
+        this.idEmpresa = idEmpresa;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (idusuario != null ? idusuario.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Usuario)) {
+        if (!(object instanceof CentroDeAyuda)) {
             return false;
         }
-        Usuario other = (Usuario) object;
-        if ((this.idusuario == null && other.idusuario != null) || (this.idusuario != null && !this.idusuario.equals(other.idusuario))) {
+        CentroDeAyuda other = (CentroDeAyuda) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -116,7 +128,7 @@ public class Usuario implements Serializable {
 
     @Override
     public String toString() {
-        return "cl.intelidata.jpa.Usuario[ idusuario=" + idusuario + " ]";
+        return "cl.intelidata.jpa.CentroDeAyuda[ id=" + id + " ]";
     }
     
 }

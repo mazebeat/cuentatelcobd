@@ -23,27 +23,27 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package cl.intelidata.controllers;
 
 import cl.intelidata.controllers.exceptions.NonexistentEntityException;
-import cl.intelidata.jpa.Usuario;
 import java.io.Serializable;
-import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import cl.intelidata.jpa.Telefono;
+import cl.intelidata.jpa.Total;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 
 /**
  *
- * @author Juan
+ * @author Dev-DFeliu
  */
-public class UsuarioJpaController implements Serializable {
+public class TotalJpaController implements Serializable {
 
-    public UsuarioJpaController(EntityManagerFactory emf) {
+    public TotalJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
     private EntityManagerFactory emf = null;
@@ -52,12 +52,21 @@ public class UsuarioJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(Usuario usuario) {
+    public void create(Total total) {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            em.persist(usuario);
+            Telefono idTelefono = total.getIdTelefono();
+            if (idTelefono != null) {
+                idTelefono = em.getReference(idTelefono.getClass(), idTelefono.getId());
+                total.setIdTelefono(idTelefono);
+            }
+            em.persist(total);
+            if (idTelefono != null) {
+                idTelefono.getTotalList().add(total);
+                idTelefono = em.merge(idTelefono);
+            }
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -66,19 +75,34 @@ public class UsuarioJpaController implements Serializable {
         }
     }
 
-    public void edit(Usuario usuario) throws NonexistentEntityException, Exception {
+    public void edit(Total total) throws NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            usuario = em.merge(usuario);
+            Total persistentTotal = em.find(Total.class, total.getId());
+            Telefono idTelefonoOld = persistentTotal.getIdTelefono();
+            Telefono idTelefonoNew = total.getIdTelefono();
+            if (idTelefonoNew != null) {
+                idTelefonoNew = em.getReference(idTelefonoNew.getClass(), idTelefonoNew.getId());
+                total.setIdTelefono(idTelefonoNew);
+            }
+            total = em.merge(total);
+            if (idTelefonoOld != null && !idTelefonoOld.equals(idTelefonoNew)) {
+                idTelefonoOld.getTotalList().remove(total);
+                idTelefonoOld = em.merge(idTelefonoOld);
+            }
+            if (idTelefonoNew != null && !idTelefonoNew.equals(idTelefonoOld)) {
+                idTelefonoNew.getTotalList().add(total);
+                idTelefonoNew = em.merge(idTelefonoNew);
+            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                Integer id = usuario.getIdusuario();
-                if (findUsuario(id) == null) {
-                    throw new NonexistentEntityException("The usuario with id " + id + " no longer exists.");
+                Integer id = total.getId();
+                if (findTotal(id) == null) {
+                    throw new NonexistentEntityException("The total with id " + id + " no longer exists.");
                 }
             }
             throw ex;
@@ -94,14 +118,19 @@ public class UsuarioJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Usuario usuario;
+            Total total;
             try {
-                usuario = em.getReference(Usuario.class, id);
-                usuario.getIdusuario();
+                total = em.getReference(Total.class, id);
+                total.getId();
             } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The usuario with id " + id + " no longer exists.", enfe);
+                throw new NonexistentEntityException("The total with id " + id + " no longer exists.", enfe);
             }
-            em.remove(usuario);
+            Telefono idTelefono = total.getIdTelefono();
+            if (idTelefono != null) {
+                idTelefono.getTotalList().remove(total);
+                idTelefono = em.merge(idTelefono);
+            }
+            em.remove(total);
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -110,19 +139,19 @@ public class UsuarioJpaController implements Serializable {
         }
     }
 
-    public List<Usuario> findUsuarioEntities() {
-        return findUsuarioEntities(true, -1, -1);
+    public List<Total> findTotalEntities() {
+        return findTotalEntities(true, -1, -1);
     }
 
-    public List<Usuario> findUsuarioEntities(int maxResults, int firstResult) {
-        return findUsuarioEntities(false, maxResults, firstResult);
+    public List<Total> findTotalEntities(int maxResults, int firstResult) {
+        return findTotalEntities(false, maxResults, firstResult);
     }
 
-    private List<Usuario> findUsuarioEntities(boolean all, int maxResults, int firstResult) {
+    private List<Total> findTotalEntities(boolean all, int maxResults, int firstResult) {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            cq.select(cq.from(Usuario.class));
+            cq.select(cq.from(Total.class));
             Query q = em.createQuery(cq);
             if (!all) {
                 q.setMaxResults(maxResults);
@@ -134,20 +163,20 @@ public class UsuarioJpaController implements Serializable {
         }
     }
 
-    public Usuario findUsuario(Integer id) {
+    public Total findTotal(Integer id) {
         EntityManager em = getEntityManager();
         try {
-            return em.find(Usuario.class, id);
+            return em.find(Total.class, id);
         } finally {
             em.close();
         }
     }
 
-    public int getUsuarioCount() {
+    public int getTotalCount() {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            Root<Usuario> rt = cq.from(Usuario.class);
+            Root<Total> rt = cq.from(Total.class);
             cq.select(em.getCriteriaBuilder().count(rt));
             Query q = em.createQuery(cq);
             return ((Long) q.getSingleResult()).intValue();

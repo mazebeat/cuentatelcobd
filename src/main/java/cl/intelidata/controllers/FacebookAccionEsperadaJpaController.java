@@ -23,27 +23,27 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package cl.intelidata.controllers;
 
 import cl.intelidata.controllers.exceptions.NonexistentEntityException;
-import cl.intelidata.jpa.Usuario;
+import cl.intelidata.jpa.FacebookAccionEsperada;
 import java.io.Serializable;
-import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import cl.intelidata.jpa.Usuarios;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 
 /**
  *
- * @author Juan
+ * @author Dev-DFeliu
  */
-public class UsuarioJpaController implements Serializable {
+public class FacebookAccionEsperadaJpaController implements Serializable {
 
-    public UsuarioJpaController(EntityManagerFactory emf) {
+    public FacebookAccionEsperadaJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
     private EntityManagerFactory emf = null;
@@ -52,12 +52,21 @@ public class UsuarioJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(Usuario usuario) {
+    public void create(FacebookAccionEsperada facebookAccionEsperada) {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            em.persist(usuario);
+            Usuarios idUsuario = facebookAccionEsperada.getIdUsuario();
+            if (idUsuario != null) {
+                idUsuario = em.getReference(idUsuario.getClass(), idUsuario.getId());
+                facebookAccionEsperada.setIdUsuario(idUsuario);
+            }
+            em.persist(facebookAccionEsperada);
+            if (idUsuario != null) {
+                idUsuario.getFacebookAccionEsperadaList().add(facebookAccionEsperada);
+                idUsuario = em.merge(idUsuario);
+            }
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -66,19 +75,34 @@ public class UsuarioJpaController implements Serializable {
         }
     }
 
-    public void edit(Usuario usuario) throws NonexistentEntityException, Exception {
+    public void edit(FacebookAccionEsperada facebookAccionEsperada) throws NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            usuario = em.merge(usuario);
+            FacebookAccionEsperada persistentFacebookAccionEsperada = em.find(FacebookAccionEsperada.class, facebookAccionEsperada.getId());
+            Usuarios idUsuarioOld = persistentFacebookAccionEsperada.getIdUsuario();
+            Usuarios idUsuarioNew = facebookAccionEsperada.getIdUsuario();
+            if (idUsuarioNew != null) {
+                idUsuarioNew = em.getReference(idUsuarioNew.getClass(), idUsuarioNew.getId());
+                facebookAccionEsperada.setIdUsuario(idUsuarioNew);
+            }
+            facebookAccionEsperada = em.merge(facebookAccionEsperada);
+            if (idUsuarioOld != null && !idUsuarioOld.equals(idUsuarioNew)) {
+                idUsuarioOld.getFacebookAccionEsperadaList().remove(facebookAccionEsperada);
+                idUsuarioOld = em.merge(idUsuarioOld);
+            }
+            if (idUsuarioNew != null && !idUsuarioNew.equals(idUsuarioOld)) {
+                idUsuarioNew.getFacebookAccionEsperadaList().add(facebookAccionEsperada);
+                idUsuarioNew = em.merge(idUsuarioNew);
+            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                Integer id = usuario.getIdusuario();
-                if (findUsuario(id) == null) {
-                    throw new NonexistentEntityException("The usuario with id " + id + " no longer exists.");
+                Integer id = facebookAccionEsperada.getId();
+                if (findFacebookAccionEsperada(id) == null) {
+                    throw new NonexistentEntityException("The facebookAccionEsperada with id " + id + " no longer exists.");
                 }
             }
             throw ex;
@@ -94,14 +118,19 @@ public class UsuarioJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Usuario usuario;
+            FacebookAccionEsperada facebookAccionEsperada;
             try {
-                usuario = em.getReference(Usuario.class, id);
-                usuario.getIdusuario();
+                facebookAccionEsperada = em.getReference(FacebookAccionEsperada.class, id);
+                facebookAccionEsperada.getId();
             } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The usuario with id " + id + " no longer exists.", enfe);
+                throw new NonexistentEntityException("The facebookAccionEsperada with id " + id + " no longer exists.", enfe);
             }
-            em.remove(usuario);
+            Usuarios idUsuario = facebookAccionEsperada.getIdUsuario();
+            if (idUsuario != null) {
+                idUsuario.getFacebookAccionEsperadaList().remove(facebookAccionEsperada);
+                idUsuario = em.merge(idUsuario);
+            }
+            em.remove(facebookAccionEsperada);
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -110,19 +139,19 @@ public class UsuarioJpaController implements Serializable {
         }
     }
 
-    public List<Usuario> findUsuarioEntities() {
-        return findUsuarioEntities(true, -1, -1);
+    public List<FacebookAccionEsperada> findFacebookAccionEsperadaEntities() {
+        return findFacebookAccionEsperadaEntities(true, -1, -1);
     }
 
-    public List<Usuario> findUsuarioEntities(int maxResults, int firstResult) {
-        return findUsuarioEntities(false, maxResults, firstResult);
+    public List<FacebookAccionEsperada> findFacebookAccionEsperadaEntities(int maxResults, int firstResult) {
+        return findFacebookAccionEsperadaEntities(false, maxResults, firstResult);
     }
 
-    private List<Usuario> findUsuarioEntities(boolean all, int maxResults, int firstResult) {
+    private List<FacebookAccionEsperada> findFacebookAccionEsperadaEntities(boolean all, int maxResults, int firstResult) {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            cq.select(cq.from(Usuario.class));
+            cq.select(cq.from(FacebookAccionEsperada.class));
             Query q = em.createQuery(cq);
             if (!all) {
                 q.setMaxResults(maxResults);
@@ -134,20 +163,20 @@ public class UsuarioJpaController implements Serializable {
         }
     }
 
-    public Usuario findUsuario(Integer id) {
+    public FacebookAccionEsperada findFacebookAccionEsperada(Integer id) {
         EntityManager em = getEntityManager();
         try {
-            return em.find(Usuario.class, id);
+            return em.find(FacebookAccionEsperada.class, id);
         } finally {
             em.close();
         }
     }
 
-    public int getUsuarioCount() {
+    public int getFacebookAccionEsperadaCount() {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            Root<Usuario> rt = cq.from(Usuario.class);
+            Root<FacebookAccionEsperada> rt = cq.from(FacebookAccionEsperada.class);
             cq.select(em.getCriteriaBuilder().count(rt));
             Query q = em.createQuery(cq);
             return ((Long) q.getSingleResult()).intValue();

@@ -23,7 +23,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package cl.intelidata.jpa;
 
 import java.io.Serializable;
@@ -40,75 +39,86 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author Juan
+ * @author Dev-DFeliu
  */
 @Entity
-@Table(name = "usuarios")
+@Table(name = "sucursales")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Usuario.findAll", query = "SELECT u FROM Usuario u"),
-    @NamedQuery(name = "Usuario.findByIdusuario", query = "SELECT u FROM Usuario u WHERE u.idusuario = :idusuario"),
-    @NamedQuery(name = "Usuario.findByUsuario", query = "SELECT u FROM Usuario u WHERE u.usuario = :usuario"),
-    @NamedQuery(name = "Usuario.findByContrasena", query = "SELECT u FROM Usuario u WHERE u.contrasena = :contrasena")})
-public class Usuario implements Serializable {
+    @NamedQuery(name = "Sucursales.findAll", query = "SELECT s FROM Sucursales s"),
+    @NamedQuery(name = "Sucursales.findById", query = "SELECT s FROM Sucursales s WHERE s.id = :id"),
+    @NamedQuery(name = "Sucursales.findByNombre", query = "SELECT s FROM Sucursales s WHERE s.nombre = :nombre"),
+    @NamedQuery(name = "Sucursales.findByDireccion", query = "SELECT s FROM Sucursales s WHERE s.direccion = :direccion"),
+    @NamedQuery(name = "Sucursales.findByHorarioAtencion", query = "SELECT s FROM Sucursales s WHERE s.horarioAtencion = :horarioAtencion")})
+public class Sucursales implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "idusuario")
-    private Integer idusuario;
-    @Column(name = "usuario")
-    private String usuario;
-    @Column(name = "contrasena")
-    private String contrasena;
+    @Column(name = "id")
+    private Integer id;
+    @Column(name = "nombre")
+    private String nombre;
+    @Column(name = "direccion")
+    private String direccion;
+    @Column(name = "horario_atencion")
+    private String horarioAtencion;
 
-    public Usuario() {
+    public Sucursales() {
     }
 
-    public Usuario(Integer idusuario) {
-        this.idusuario = idusuario;
+    public Sucursales(Integer id) {
+        this.id = id;
     }
 
-    public Integer getIdusuario() {
-        return idusuario;
+    public Integer getId() {
+        return id;
     }
 
-    public void setIdusuario(Integer idusuario) {
-        this.idusuario = idusuario;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public String getUsuario() {
-        return usuario;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
-    public String getContrasena() {
-        return contrasena;
+    public String getDireccion() {
+        return direccion;
     }
 
-    public void setContrasena(String contrasena) {
-        this.contrasena = contrasena;
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+
+    public String getHorarioAtencion() {
+        return horarioAtencion;
+    }
+
+    public void setHorarioAtencion(String horarioAtencion) {
+        this.horarioAtencion = horarioAtencion;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (idusuario != null ? idusuario.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Usuario)) {
+        if (!(object instanceof Sucursales)) {
             return false;
         }
-        Usuario other = (Usuario) object;
-        if ((this.idusuario == null && other.idusuario != null) || (this.idusuario != null && !this.idusuario.equals(other.idusuario))) {
+        Sucursales other = (Sucursales) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -116,7 +126,7 @@ public class Usuario implements Serializable {
 
     @Override
     public String toString() {
-        return "cl.intelidata.jpa.Usuario[ idusuario=" + idusuario + " ]";
+        return "cl.intelidata.jpa.Sucursales[ id=" + id + " ]";
     }
     
 }
