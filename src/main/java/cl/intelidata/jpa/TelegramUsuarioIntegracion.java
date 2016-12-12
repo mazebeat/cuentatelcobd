@@ -55,7 +55,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "TelegramUsuarioIntegracion.findByCodigo", query = "SELECT t FROM TelegramUsuarioIntegracion t WHERE t.codigo = :codigo"),
     @NamedQuery(name = "TelegramUsuarioIntegracion.findByEstado", query = "SELECT t FROM TelegramUsuarioIntegracion t WHERE t.estado = :estado"),
     @NamedQuery(name = "TelegramUsuarioIntegracion.findByCreatedAt", query = "SELECT t FROM TelegramUsuarioIntegracion t WHERE t.createdAt = :createdAt"),
-    @NamedQuery(name = "TelegramUsuarioIntegracion.findByUpdatedAt", query = "SELECT t FROM TelegramUsuarioIntegracion t WHERE t.updatedAt = :updatedAt")})
+    @NamedQuery(name = "TelegramUsuarioIntegracion.findByUpdatedAt", query = "SELECT t FROM TelegramUsuarioIntegracion t WHERE t.updatedAt = :updatedAt"),
+    @NamedQuery(name = "TelegramUsuarioIntegracion.GetUserCode", query = "SELECT t FROM TelegramUsuarioIntegracion t WHERE t.id_usuario = :id_usuario AND t.estado = 1 ORDER BY t.created_at DESC")})
 public class TelegramUsuarioIntegracion implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -157,5 +158,8 @@ public class TelegramUsuarioIntegracion implements Serializable {
     public String toString() {
         return "cl.intelidata.jpa.TelegramUsuarioIntegracion[ id=" + id + " ]";
     }
-    
+
+    public void getCode() {
+
+    }
 }
