@@ -56,7 +56,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "TelegramUsuarioIntegracion.findByEstado", query = "SELECT t FROM TelegramUsuarioIntegracion t WHERE t.estado = :estado"),
     @NamedQuery(name = "TelegramUsuarioIntegracion.findByCreatedAt", query = "SELECT t FROM TelegramUsuarioIntegracion t WHERE t.createdAt = :createdAt"),
     @NamedQuery(name = "TelegramUsuarioIntegracion.findByUpdatedAt", query = "SELECT t FROM TelegramUsuarioIntegracion t WHERE t.updatedAt = :updatedAt"),
-    @NamedQuery(name = "TelegramUsuarioIntegracion.GetUserCode", query = "SELECT t FROM TelegramUsuarioIntegracion t WHERE t.id_usuario = :id_usuario AND t.estado = 1 ORDER BY t.created_at DESC")})
+    @NamedQuery(name = "TelegramUsuarioIntegracion.GetUserCode", query = "SELECT t FROM TelegramUsuarioIntegracion t WHERE t.estado = 1 AND t.idUsuario = :idUsuario ORDER BY t.createdAt DESC")})
 public class TelegramUsuarioIntegracion implements Serializable {
 
     private static final long serialVersionUID = 1L;

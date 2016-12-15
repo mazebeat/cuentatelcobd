@@ -68,7 +68,10 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Cliente.findByUpdatedAt", query = "SELECT c FROM Cliente c WHERE c.updatedAt = :updatedAt"),
     @NamedQuery(name = "Cliente.findByDeletedAt", query = "SELECT c FROM Cliente c WHERE c.deletedAt = :deletedAt"),
     @NamedQuery(name = "Cliente.findByFechaVencimiento", query = "SELECT c FROM Cliente c WHERE c.fechaVencimiento = :fechaVencimiento"),
-    @NamedQuery(name = "Cliente.findByEstado", query = "SELECT c FROM Cliente c WHERE c.estado = :estado")})
+    @NamedQuery(name = "Cliente.findByEstado", query = "SELECT c FROM Cliente c WHERE c.estado = :estado"),
+    // TODO: Preguntar por qué es diferente a 1
+    @NamedQuery(name = "Cliente.isRegister", query = "SELECT c FROM Cliente c WHERE c.personaId.id <> 1 AND c.id = :id")
+})
 public class Cliente implements Serializable {
 
     private static final long serialVersionUID = 1L;

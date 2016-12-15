@@ -55,7 +55,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "FacebookUsuarioIntegracion.findByCodigo", query = "SELECT f FROM FacebookUsuarioIntegracion f WHERE f.codigo = :codigo"),
     @NamedQuery(name = "FacebookUsuarioIntegracion.findByEstado", query = "SELECT f FROM FacebookUsuarioIntegracion f WHERE f.estado = :estado"),
     @NamedQuery(name = "FacebookUsuarioIntegracion.findByCreatedAt", query = "SELECT f FROM FacebookUsuarioIntegracion f WHERE f.createdAt = :createdAt"),
-    @NamedQuery(name = "FacebookUsuarioIntegracion.findByUpdatedAt", query = "SELECT f FROM FacebookUsuarioIntegracion f WHERE f.updatedAt = :updatedAt")})
+    @NamedQuery(name = "FacebookUsuarioIntegracion.findByUpdatedAt", query = "SELECT f FROM FacebookUsuarioIntegracion f WHERE f.updatedAt = :updatedAt"),
+    @NamedQuery(name = "FacebookUsuarioIntegracion.GetUserCode", query = "SELECT f FROM FacebookUsuarioIntegracion f WHERE f.estado = 1 AND f.idUsuario = :idUsuario ORDER BY f.createdAt DESC"),})
 public class FacebookUsuarioIntegracion implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -157,5 +158,5 @@ public class FacebookUsuarioIntegracion implements Serializable {
     public String toString() {
         return "cl.intelidata.jpa.FacebookUsuarioIntegracion[ id=" + id + " ]";
     }
-    
+
 }
