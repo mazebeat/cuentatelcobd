@@ -179,5 +179,5 @@ public class Preguntas implements Serializable {
     public String toString() {
         return "cl.intelidata.jpa.Preguntas[ id=" + id + " ]";
     }
-    
+
 }

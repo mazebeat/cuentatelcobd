@@ -58,7 +58,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PreguntaRespuesta.findById", query = "SELECT p FROM PreguntaRespuesta p WHERE p.id = :id"),
     @NamedQuery(name = "PreguntaRespuesta.findByCreatedAt", query = "SELECT p FROM PreguntaRespuesta p WHERE p.createdAt = :createdAt"),
     @NamedQuery(name = "PreguntaRespuesta.findByUpdatedAt", query = "SELECT p FROM PreguntaRespuesta p WHERE p.updatedAt = :updatedAt"),
-    @NamedQuery(name = "PreguntaRespuesta.findByDeletedAt", query = "SELECT p FROM PreguntaRespuesta p WHERE p.deletedAt = :deletedAt")})
+    @NamedQuery(name = "PreguntaRespuesta.findByDeletedAt", query = "SELECT p FROM PreguntaRespuesta p WHERE p.deletedAt = :deletedAt"),
+    @NamedQuery(name = "PreguntaRespuesta.findByIdQuestionIdAnswer", query = "SELECT p FROM PreguntaRespuesta p WHERE p.idPregunta.id = :idPregunta AND p.idRespuesta.id = :idRespuesta")})
 public class PreguntaRespuesta implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -181,5 +182,5 @@ public class PreguntaRespuesta implements Serializable {
     public String toString() {
         return "cl.intelidata.jpa.PreguntaRespuesta[ id=" + id + " ]";
     }
-    
+
 }
