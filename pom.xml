@@ -41,13 +41,11 @@
         <url>http://www.intelidata.cl</url>
     </organization>
 
-
     <scm>
         <connection>scm:git:https://jastorgalj@bitbucket.org/intelidata/ctatelco.git/${project.artifactId}</connection>
         <developerConnection>scm:git:https://jastorgalj@bitbucket.org/intelidata/ctatelco.git/${project.artifactId}</developerConnection>
         <url>scm:git:https://jastorgalj@bitbucket.org/intelidata/ctatelco.git/${project.artifactId}</url>
     </scm>
-
 
     <distributionManagement>
         <repository>
@@ -68,6 +66,4 @@
             <url>http://192.168.1.100:8081/nexus/content/groups/public</url>
         </repository>
     </repositories>
-    
-   
 </project>
