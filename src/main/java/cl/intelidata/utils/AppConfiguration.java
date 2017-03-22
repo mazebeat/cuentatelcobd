@@ -36,12 +36,12 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Configuracion {
+public class AppConfiguration {
 
     private Properties datos = new Properties();
     private String nameFileConf;
-    private static Configuracion conf = null;
-    private static Logger logger = LoggerFactory.getLogger(Configuracion.class);
+    private static AppConfiguration conf = null;
+    private static Logger logger = LoggerFactory.getLogger(AppConfiguration.class);
     private static String archConf = "/apps/CtaTelco/config/CuentaTelco.properties";
 
     /**
@@ -51,14 +51,14 @@ public class Configuracion {
      * @param nameFileConfiguracion
      * @return
      */
-    public synchronized static Configuracion getInstance() {
+    public synchronized static AppConfiguration getInstance() {
         if (conf == null) {
             try {
                 if (!System.getProperty("file.separator").equals("/")) {
                     archConf = System.getProperty("disco", "c:") + archConf;
                 }
 
-                conf = new Configuracion(archConf);
+                conf = new AppConfiguration(archConf);
 
                 logger.info("Leyendo archivo de configuracion: " + archConf);
             } catch (IOException e) {
@@ -69,7 +69,7 @@ public class Configuracion {
         return conf;
     }
 
-    private Configuracion(String nameFileConf) throws IOException {
+    private AppConfiguration(String nameFileConf) throws IOException {
         this.nameFileConf = nameFileConf;
         try (FileInputStream fi = new FileInputStream(nameFileConf)) {
             datos.load(fi);

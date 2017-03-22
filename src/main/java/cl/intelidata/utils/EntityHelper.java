@@ -45,9 +45,9 @@ public class EntityHelper {
 
     public EntityHelper() {
         Map<String, String> propiedades = new HashMap();
-        propiedades.put("javax.persistence.jdbc.url", Configuracion.getInstance().getInitParameter("javax.persistence.jdbc.url"));
-        propiedades.put("javax.persistence.jdbc.user", Configuracion.getInstance().getInitParameter("javax.persistence.jdbc.user"));
-        propiedades.put("javax.persistence.jdbc.password", Configuracion.getInstance().getInitParameter("javax.persistence.jdbc.password"));
+        propiedades.put("javax.persistence.jdbc.url", AppConfiguration.getInstance().getInitParameter("javax.persistence.jdbc.url"));
+        propiedades.put("javax.persistence.jdbc.user", AppConfiguration.getInstance().getInitParameter("javax.persistence.jdbc.user"));
+        propiedades.put("javax.persistence.jdbc.password", AppConfiguration.getInstance().getInitParameter("javax.persistence.jdbc.password"));
         entityManagerFactory = Persistence.createEntityManagerFactory("CtaTelco_PU", propiedades);
     }
 
