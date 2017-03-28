@@ -74,6 +74,8 @@ import javax.xml.bind.annotation.XmlTransient;
 })
 public class Cliente implements Serializable {
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCliente")
+    private List<Settings> settingsList;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -345,5 +347,13 @@ public class Cliente implements Serializable {
     public String toString() {
         return "cl.intelidata.jpa.Cliente[ id=" + id + " ]";
     }
-    
+
+    @XmlTransient
+    public List<Settings> getSettingsList() {
+        return settingsList;
+    }
+
+    public void setSettingsList(List<Settings> settingsList) {
+        this.settingsList = settingsList;
+    }
 }
