@@ -184,5 +184,5 @@ public class SettingsJpaController implements Serializable {
             em.close();
         }
     }
-    
+
 }

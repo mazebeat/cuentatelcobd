@@ -54,6 +54,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Settings.findByDimension1", query = "SELECT s FROM Settings s WHERE s.dimension1 = :dimension1"),
     @NamedQuery(name = "Settings.findByDimension2", query = "SELECT s FROM Settings s WHERE s.dimension2 = :dimension2"),
     @NamedQuery(name = "Settings.findByView", query = "SELECT s FROM Settings s WHERE s.view = :view"),
+    @NamedQuery(name = "Settings.findByIdCliente", query = "SELECT s FROM Settings s WHERE s.idCliente = :idCliente"),
     @NamedQuery(name = "Settings.findByIdClienteView", query = "SELECT s FROM Settings s WHERE s.idCliente = :idCliente AND s.view = :view")})
 public class Settings implements Serializable {
 
