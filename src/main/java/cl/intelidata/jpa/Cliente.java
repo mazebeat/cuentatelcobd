@@ -27,6 +27,7 @@ package cl.intelidata.jpa;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
@@ -76,6 +77,7 @@ public class Cliente implements Serializable {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCliente")
     private List<Settings> settingsList;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

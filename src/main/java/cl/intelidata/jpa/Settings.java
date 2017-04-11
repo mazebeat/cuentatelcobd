@@ -54,7 +54,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Settings.findByDimension1", query = "SELECT s FROM Settings s WHERE s.dimension1 = :dimension1"),
     @NamedQuery(name = "Settings.findByDimension2", query = "SELECT s FROM Settings s WHERE s.dimension2 = :dimension2"),
     @NamedQuery(name = "Settings.findByView", query = "SELECT s FROM Settings s WHERE s.view = :view"),
-    @NamedQuery(name = "Settings.findByIdCliente", query = "SELECT s FROM Settings s WHERE s.idCliente = :idCliente"),
+    @NamedQuery(name = "Settings.findByUploaded", query = "SELECT s FROM Settings s WHERE s.uploaded = :uploaded"),
     @NamedQuery(name = "Settings.findByIdClienteView", query = "SELECT s FROM Settings s WHERE s.idCliente = :idCliente AND s.view = :view")})
 public class Settings implements Serializable {
 
@@ -79,6 +79,9 @@ public class Settings implements Serializable {
     @Basic(optional = false)
     @Column(name = "view")
     private String view;
+    @Basic(optional = false)
+    @Column(name = "uploaded")
+    private short uploaded;
     @JoinColumn(name = "id_cliente", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Cliente idCliente;
@@ -90,31 +93,14 @@ public class Settings implements Serializable {
         this.id = id;
     }
 
-    public Settings(Integer id, String label1, String label2, String dimension1, String dimension2) {
-        this.id = id;
-        this.label1 = label1;
-        this.label2 = label2;
-        this.dimension1 = dimension1;
-        this.dimension2 = dimension2;
-    }
-
-    public Settings(Integer id, String label1, String label2, String dimension1, String dimension2, String view) {
+    public Settings(Integer id, String label1, String label2, String dimension1, String dimension2, String view, short uploaded) {
         this.id = id;
         this.label1 = label1;
         this.label2 = label2;
         this.dimension1 = dimension1;
         this.dimension2 = dimension2;
         this.view = view;
-    }
-
-    public Settings(Integer id, String label1, String label2, String dimension1, String dimension2, String view, Cliente idCliente) {
-        this.id = id;
-        this.label1 = label1;
-        this.label2 = label2;
-        this.dimension1 = dimension1;
-        this.dimension2 = dimension2;
-        this.view = view;
-        this.idCliente = idCliente;
+        this.uploaded = uploaded;
     }
 
     public Integer getId() {
@@ -165,6 +151,14 @@ public class Settings implements Serializable {
         this.view = view;
     }
 
+    public short getUploaded() {
+        return uploaded;
+    }
+
+    public void setUploaded(short uploaded) {
+        this.uploaded = uploaded;
+    }
+
     public Cliente getIdCliente() {
         return idCliente;
     }
@@ -197,5 +191,5 @@ public class Settings implements Serializable {
     public String toString() {
         return "cl.intelidata.jpa.Settings[ id=" + id + " ]";
     }
-
+    
 }

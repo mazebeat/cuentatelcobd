@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, Intelidata S.A.
+ * Copyright (c) 2017, Intelidata S.A.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,8 @@ import cl.intelidata.jpa.TotalServicios;
 import cl.intelidata.jpa.Hitos;
 import cl.intelidata.jpa.Telefono;
 import cl.intelidata.jpa.ClientePreguntas;
+import cl.intelidata.jpa.Settings;
+import java.util.Collection;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
@@ -76,6 +78,9 @@ public class ClienteJpaController implements Serializable {
         }
         if (cliente.getClientePreguntasList() == null) {
             cliente.setClientePreguntasList(new ArrayList<ClientePreguntas>());
+        }       
+        if (cliente.getSettingsList() == null) {
+            cliente.setSettingsList(new ArrayList<Settings>());
         }
         EntityManager em = null;
         try {
@@ -126,6 +131,13 @@ public class ClienteJpaController implements Serializable {
                 attachedClientePreguntasList.add(clientePreguntasListClientePreguntasToAttach);
             }
             cliente.setClientePreguntasList(attachedClientePreguntasList);
+            List<Settings> attachedSettingsList = new ArrayList<Settings>();
+            for (Settings settingsListSettingsToAttach : cliente.getSettingsList()) {
+                settingsListSettingsToAttach = em.getReference(settingsListSettingsToAttach.getClass(), settingsListSettingsToAttach.getId());
+                attachedSettingsList.add(settingsListSettingsToAttach);
+            }
+            cliente.setSettingsList(attachedSettingsList);
+           
             em.persist(cliente);
             if (personaId != null) {
                 personaId.getClienteList().add(cliente);
@@ -184,6 +196,15 @@ public class ClienteJpaController implements Serializable {
                     oldIdClienteOfClientePreguntasListClientePreguntas = em.merge(oldIdClienteOfClientePreguntasListClientePreguntas);
                 }
             }
+            for (Settings settingsListSettings : cliente.getSettingsList()) {
+                Cliente oldIdClienteOfSettingsListSettings = settingsListSettings.getIdCliente();
+                settingsListSettings.setIdCliente(cliente);
+                settingsListSettings = em.merge(settingsListSettings);
+                if (oldIdClienteOfSettingsListSettings != null) {
+                    oldIdClienteOfSettingsListSettings.getSettingsList().remove(settingsListSettings);
+                    oldIdClienteOfSettingsListSettings = em.merge(oldIdClienteOfSettingsListSettings);
+                }
+            }      
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -214,6 +235,8 @@ public class ClienteJpaController implements Serializable {
             List<Telefono> telefonoListNew = cliente.getTelefonoList();
             List<ClientePreguntas> clientePreguntasListOld = persistentCliente.getClientePreguntasList();
             List<ClientePreguntas> clientePreguntasListNew = cliente.getClientePreguntasList();
+            List<Settings> settingsListOld = persistentCliente.getSettingsList();
+            List<Settings> settingsListNew = cliente.getSettingsList();
             List<String> illegalOrphanMessages = null;
             for (Hitos hitosListOldHitos : hitosListOld) {
                 if (!hitosListNew.contains(hitosListOldHitos)) {
@@ -239,6 +262,14 @@ public class ClienteJpaController implements Serializable {
                     illegalOrphanMessages.add("You must retain ClientePreguntas " + clientePreguntasListOldClientePreguntas + " since its idCliente field is not nullable.");
                 }
             }
+            for (Settings settingsListOldSettings : settingsListOld) {
+                if (!settingsListNew.contains(settingsListOldSettings)) {
+                    if (illegalOrphanMessages == null) {
+                        illegalOrphanMessages = new ArrayList<String>();
+                    }
+                    illegalOrphanMessages.add("You must retain Settings " + settingsListOldSettings + " since its idCliente field is not nullable.");
+                }
+            }          
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
             }
@@ -289,6 +320,13 @@ public class ClienteJpaController implements Serializable {
             }
             clientePreguntasListNew = attachedClientePreguntasListNew;
             cliente.setClientePreguntasList(clientePreguntasListNew);
+            List<Settings> attachedSettingsListNew = new ArrayList<Settings>();
+            for (Settings settingsListNewSettingsToAttach : settingsListNew) {
+                settingsListNewSettingsToAttach = em.getReference(settingsListNewSettingsToAttach.getClass(), settingsListNewSettingsToAttach.getId());
+                attachedSettingsListNew.add(settingsListNewSettingsToAttach);
+            }
+            settingsListNew = attachedSettingsListNew;
+            cliente.setSettingsList(settingsListNew);          
             cliente = em.merge(cliente);
             if (personaIdOld != null && !personaIdOld.equals(personaIdNew)) {
                 personaIdOld.getClienteList().remove(cliente);
@@ -381,6 +419,17 @@ public class ClienteJpaController implements Serializable {
                     }
                 }
             }
+            for (Settings settingsListNewSettings : settingsListNew) {
+                if (!settingsListOld.contains(settingsListNewSettings)) {
+                    Cliente oldIdClienteOfSettingsListNewSettings = settingsListNewSettings.getIdCliente();
+                    settingsListNewSettings.setIdCliente(cliente);
+                    settingsListNewSettings = em.merge(settingsListNewSettings);
+                    if (oldIdClienteOfSettingsListNewSettings != null && !oldIdClienteOfSettingsListNewSettings.equals(cliente)) {
+                        oldIdClienteOfSettingsListNewSettings.getSettingsList().remove(settingsListNewSettings);
+                        oldIdClienteOfSettingsListNewSettings = em.merge(oldIdClienteOfSettingsListNewSettings);
+                    }
+                }
+            }           
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
@@ -432,6 +481,13 @@ public class ClienteJpaController implements Serializable {
                 }
                 illegalOrphanMessages.add("This Cliente (" + cliente + ") cannot be destroyed since the ClientePreguntas " + clientePreguntasListOrphanCheckClientePreguntas + " in its clientePreguntasList field has a non-nullable idCliente field.");
             }
+            List<Settings> settingsListOrphanCheck = cliente.getSettingsList();
+            for (Settings settingsListOrphanCheckSettings : settingsListOrphanCheck) {
+                if (illegalOrphanMessages == null) {
+                    illegalOrphanMessages = new ArrayList<String>();
+                }
+                illegalOrphanMessages.add("This Cliente (" + cliente + ") cannot be destroyed since the Settings " + settingsListOrphanCheckSettings + " in its settingsList field has a non-nullable idCliente field.");
+            }         
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
             }

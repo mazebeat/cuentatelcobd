@@ -47,6 +47,7 @@
     <class>cl.intelidata.jpa.Notificaciones</class>
     <class>cl.intelidata.jpa.HistoricalCategory</class>
     <class>cl.intelidata.jpa.PhonesByProduct</class>
+    <class>cl.intelidata.jpa.SettingsBkp</class>
     <class>cl.intelidata.jpa.Settings</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://50.116.60.31:6033/cuentatelco?zeroDateTimeBehavior=convertToNull"/>
