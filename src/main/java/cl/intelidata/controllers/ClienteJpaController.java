@@ -44,7 +44,6 @@ import cl.intelidata.jpa.Hitos;
 import cl.intelidata.jpa.Telefono;
 import cl.intelidata.jpa.ClientePreguntas;
 import cl.intelidata.jpa.Settings;
-import java.util.Collection;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 

@@ -49,6 +49,7 @@
     <class>cl.intelidata.jpa.PhonesByProduct</class>
     <class>cl.intelidata.jpa.SettingsBkp</class>
     <class>cl.intelidata.jpa.Settings</class>
+    <class>cl.intelidata.jpa.Glosa</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://50.116.60.31:6033/cuentatelco?zeroDateTimeBehavior=convertToNull"/>
       <property name="javax.persistence.jdbc.user" value="intelidata"/>

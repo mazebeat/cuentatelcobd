@@ -27,7 +27,6 @@ package cl.intelidata.jpa;
 
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
@@ -74,6 +73,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Cliente.isRegister", query = "SELECT c FROM Cliente c WHERE c.personaId.id <> 1 AND c.id = :id")
 })
 public class Cliente implements Serializable {
+
+    @OneToMany(mappedBy = "idCliente")
+    private List<Glosa> glosaList;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCliente")
     private List<Settings> settingsList;
@@ -357,5 +359,14 @@ public class Cliente implements Serializable {
 
     public void setSettingsList(List<Settings> settingsList) {
         this.settingsList = settingsList;
+    }
+
+    @XmlTransient
+    public List<Glosa> getGlosaList() {
+        return glosaList;
+    }
+
+    public void setGlosaList(List<Glosa> glosaList) {
+        this.glosaList = glosaList;
     }
 }
